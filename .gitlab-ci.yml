@@ -1,0 +1,38 @@
+stages:
+  - build
+  - test
+  - sast
+  - dast
+  - deploy
+
+variables:
+  MAVEN_CLI_OPTS: "-B -DskipTests"
+
+before_script:
+  - apt-get update -qy
+  - apt-get install -y maven
+
+build:
+  stage: build
+  script:
+    - mvn $MAVEN_CLI_OPTS clean package
+
+test:
+  stage: test
+  script:
+    - mvn $MAVEN_CLI_OPTS test
+
+.sast:
+  stage: sast
+  script:
+    - spotbugs -effort:max -xml:withMessages -output spotbugs-report.xml
+
+.dast:
+  stage: dast
+  script:
+    - zap-cli -p 8080 -t http://your-app-url
+
+.deploy:
+  stage: deploy
+  script:
+    - scp target/your-app.jar user@your-server:/path/to/deployment
