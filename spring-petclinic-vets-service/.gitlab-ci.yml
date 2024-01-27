@@ -1,0 +1,13 @@
+build:
+  script:
+    - ./mvnw $MAVEN_CLI_OPTS clean install -PbuildDocker
+  only:
+    changes:
+      - "spring-petclinic-spring-petclinic-vets-service/**/*"
+
+test:
+  script:
+    - ./mvnw $MAVEN_CLI_OPTS test
+  only:
+    changes:
+      - "spring-petclinic-spring-petclinic-vets-service/**/*"

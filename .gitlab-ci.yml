@@ -1,26 +1,28 @@
 stages:
   - build
   - test
-  - sast
-  - dast
-  - deploy
 
 variables:
-  MAVEN_CLI_OPTS: "-B -DskipTests"
+  MAVEN_CLI_OPTS: "-s .m2/settings.xml --batch-mode"
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+
+cache:
+  paths:
+    - .m2/repository
+    - target/
 
 before_script:
-  - apt-get update -qy
-  - apt-get install -y maven
+  - chmod +x mvnw
 
-build:
-  stage: build
-  script:
-    - mvn $MAVEN_CLI_OPTS clean package
+include:
+  - local: spring-petclinic-admin-server/.gitlab-ci.yml
+  - local: spring-petclinic-visits-service/.gitlab-ci.yml
+  - local: spring-petclinic-vets-service/.gitlab-ci.yml
+  - local: spring-petclinic-discovery-server/.gitlab-ci.yml
+  - local: spring-petclinic-customers-service/.gitlab-ci.yml
+  - local: spring-petclinic-config-server/.gitlab-ci.yml
+  - local: spring-petclinic-api-gateway/.gitlab-ci.yml
 
-test:
-  stage: test
-  script:
-    - mvn $MAVEN_CLI_OPTS test
 
 .sast:
   stage: sast
